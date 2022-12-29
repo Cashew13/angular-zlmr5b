@@ -9,7 +9,7 @@ export class DimensionService {
   private readonly dimensions: Dimension[] = [];
 
   constructor() {
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 5000; i++) {
       this.dimensions.push({
         key: `DM_0000${i}`,
         value: `value/${i}`,

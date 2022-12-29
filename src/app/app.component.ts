@@ -1,15 +1,19 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import {
   MatDialog,
   MAT_DIALOG_DATA,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   Observable,
   map,
@@ -30,7 +34,7 @@ import { StatefulDecorator, Updatable } from './interfaces/stateful-decorator';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   tableDimensions$: Observable<StatefulDecorator<Dimension>[]> = of([]);
   ss: string[] = [];
   createdDimensions$: Observable<string[]> = of([]);
@@ -40,6 +44,8 @@ export class AppComponent implements OnInit, OnDestroy {
   originalDimensions$: Observable<Updatable<Dimension>[]>;
 
   showUpdatedDimensionsTable: boolean = false;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  dataSource = new MatTableDataSource<Updatable<Dimension>>([]);
 
   displayedColumns: string[] = [
     'key',
@@ -58,17 +64,27 @@ export class AppComponent implements OnInit, OnDestroy {
     private dimensionService: DimensionService
   ) {}
 
-  ngOnInit() {
-    this.tableDimensions$ = this.dimensionService
-      .fetchDimensions()
-      .pipe(map((dms) => dms.map((d) => new StatefulDecorator(d))));
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+  }
 
-    this.originalDimensions$ = this.dimensionService
+  private tableSub: Subscription;
+
+  ngOnInit() {
+    // this.tableDimensions$ = this.dimensionService
+    //   .fetchDimensions()
+    //   .pipe(map((dms) => dms.map((d) => new StatefulDecorator(d))));
+
+    this.tableSub = this.dimensionService
       .fetchDimensions()
-      .pipe(map((dms) => dms.map((d) => new Updatable(d))));
+      .pipe(map((dms) => dms.map((d) => new Updatable(d))))
+      .subscribe((dms) => {
+        this.dataSource.data = dms;
+      });
   }
 
   ngOnDestroy() {
+    this.tableSub?.unsubscribe();
     this.sub?.unsubscribe();
   }
 
@@ -108,7 +124,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       dimension.updatedData.next(d);
       const ups = this.updatedDimensions.value;
-      
+
       if (!ups.find((d) => d === dimension)) {
         ups.push(dimension);
         this.updatedDimensions.next([...ups]);
@@ -118,7 +134,8 @@ export class AppComponent implements OnInit, OnDestroy {
       if (this.isDimensionReverted(dimension)) {
         dimension.updatedData.next(null);
         this.updatedDimensions.next(ups.filter((d) => d !== dimension));
-        this.showUpdatedDimensionsTable = this.updatedDimensions.value.length > 0;
+        this.showUpdatedDimensionsTable =
+          this.updatedDimensions.value.length > 0;
         return;
       }
     });
