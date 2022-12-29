@@ -1,161 +1,33 @@
-<h1>Click your dialog!</h1>
+<h1>Ello world!</h1>
 
 <button mat-raised-button color="accent" (click)="openCreateDialog()">
   ADD
 </button>
 
-<app-dimension-table 
-  [dataSource]="originalTableDataSource"
-  (updateActionClick)="openUpdateDialog($event)">
-</app-dimension-table>
-
 <ng-container *ngIf="this.updatedTableDataSource.data.length">
   <mat-slide-toggle [(ngModel)]="showUpdatedDimensionsTable"
-    >Show updated
+    >Show all updated
   </mat-slide-toggle>
   <div>
-    You have updated {{ updatedTableDataSource.data.length }} Dimensions. Toggle
-    the switch above to show only the updated Dimensions.
+    You have updated {{ updatedTableDataSource.data.length }} dimension(s).
+    <br />
+    Toggle the switch above to show only the dimension(s) you've updated.
   </div>
   <div [hidden]="!showUpdatedDimensionsTable">
-    <table
-      mat-table
-      class="mat-elevation-z8"
+    <app-dimension-table
       [dataSource]="updatedTableDataSource"
+      (updateActionClick)="openUpdateDialog($event)"
+      (revertActionClick)="revertChanges($event)"
     >
-      <ng-container matColumnDef="key">
-        <th mat-header-cell *matHeaderCellDef>Key</th>
-        <td mat-cell *matCellDef="let element">
-          {{ (element.updatedData.value ?? element.originalData.value).key }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="value">
-        <th mat-header-cell *matHeaderCellDef>Value</th>
-        <td mat-cell *matCellDef="let element">
-          {{ (element.updatedData.value ?? element.originalData.value).value }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="riskScore">
-        <th mat-header-cell *matHeaderCellDef>Risk score</th>
-        <td mat-cell *matCellDef="let element">
-          {{
-            (element.updatedData.value ?? element.originalData.value).riskScore
-          }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="active">
-        <th mat-header-cell *matHeaderCellDef>Active</th>
-        <td mat-cell *matCellDef="let element">
-          {{ (element.updatedData.value ?? element.originalData.value).active }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="visible">
-        <th mat-header-cell *matHeaderCellDef>Visible</th>
-        <td mat-cell *matCellDef="let element">
-          {{
-            (element.updatedData.value ?? element.originalData.value).visible
-          }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef>Action</th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-icon-button (click)="openUpdateDialog(element)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            (click)="revertChanges(element)"
-            *ngIf="element.updatedData.value"
-          >
-            <mat-icon>history</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+    </app-dimension-table>
   </div>
-  <mat-paginator
-    #updatedTable
-    [pageSizeOptions]="[5, 10, 20]"
-    showFirstLastButtons
-  >
-  </mat-paginator>
 </ng-container>
 
 <div [hidden]="showUpdatedDimensionsTable">
-  <table
-    mat-table
+  <app-dimension-table
     [dataSource]="originalTableDataSource"
-    class="mat-elevation-z8"
+    (updateActionClick)="openUpdateDialog($event)"
+    (revertActionClick)="revertChanges($event)"
   >
-    <ng-container matColumnDef="key">
-      <th mat-header-cell *matHeaderCellDef>Key</th>
-      <td mat-cell *matCellDef="let element">
-        {{ (element.updatedData.value ?? element.originalData.value).key }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="value">
-      <th mat-header-cell *matHeaderCellDef>Value</th>
-      <td mat-cell *matCellDef="let element">
-        {{ (element.updatedData.value ?? element.originalData.value).value }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="riskScore">
-      <th mat-header-cell *matHeaderCellDef>Risk score</th>
-      <td mat-cell *matCellDef="let element">
-        {{
-          (element.updatedData.value ?? element.originalData.value).riskScore
-        }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="active">
-      <th mat-header-cell *matHeaderCellDef>Active</th>
-      <td mat-cell *matCellDef="let element">
-        {{ (element.updatedData.value ?? element.originalData.value).active }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="visible">
-      <th mat-header-cell *matHeaderCellDef>Visible</th>
-      <td mat-cell *matCellDef="let element">
-        {{ (element.updatedData.value ?? element.originalData.value).visible }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>Action</th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button (click)="openUpdateDialog(element)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button
-          mat-icon-button
-          (click)="revertChanges(element)"
-          *ngIf="element.updatedData.value"
-        >
-          <mat-icon>history</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-  <mat-paginator
-    #originalTable
-    [pageSizeOptions]="[5, 10, 20]"
-    showFirstLastButtons
-  >
-  </mat-paginator>
+  </app-dimension-table>
 </div>

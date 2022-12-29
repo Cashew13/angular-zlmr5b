@@ -1,43 +1,19 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-} from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { MatTable, MatTableDataSource } from '@angular/material/table';
-import {
-  Observable,
-  map,
-  of,
-  tap,
-  Subscription,
-  filter,
-  BehaviorSubject,
-} from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
+import { map, Subscription } from 'rxjs';
 import { Dimension } from './dimension';
 import { DimensionDialogService } from './dimension-dialog.service';
 import { DimensionFormComponent } from './dimension-form/dimension-form.component';
 import { DimensionService } from './dimension.service';
-import { StatefulDecorator, Updatable } from './interfaces/stateful-decorator';
+import { Updatable } from './interfaces/stateful-decorator';
 
 @Component({
   selector: 'my-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('originalTable') originalTablePaginator: MatPaginator;
-  @ViewChild('updatedTable') updatedTablePaginator: MatPaginator;
-
+export class AppComponent implements OnInit, OnDestroy {
   showUpdatedDimensionsTable: boolean = false;
   readonly originalTableDataSource = new MatTableDataSource<
     Updatable<Dimension>
@@ -45,14 +21,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly updatedTableDataSource = new MatTableDataSource<
     Updatable<Dimension>
   >([]);
-  readonly displayedColumns: string[] = [
-    'key',
-    'value',
-    'riskScore',
-    'active',
-    'visible',
-    'action',
-  ];
 
   private dialRefSub: Subscription;
   private originalTableSub: Subscription;
@@ -62,11 +30,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     public dimensionDialogService: DimensionDialogService,
     private dimensionService: DimensionService
   ) {}
-
-  ngAfterViewInit(): void {
-    this.originalTableDataSource.paginator = this.originalTablePaginator;
-    this.updatedTableDataSource.paginator = this.updatedTablePaginator;
-  }
 
   ngOnInit() {
     this.originalTableSub = this.dimensionService

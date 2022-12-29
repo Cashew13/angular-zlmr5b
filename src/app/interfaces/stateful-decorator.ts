@@ -1,12 +1,7 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
-
-export class StatefulDecorator<T> {
-  updatedData: T;
-  constructor(public data: T) {}
-}
+import { BehaviorSubject } from 'rxjs';
 
 export class Updatable<T> {
-  readonly updatedData: BehaviorSubject<T>;
+  readonly updatedData: BehaviorSubject<T | null>;
   readonly originalData: BehaviorSubject<T>;
 
   constructor(data: T) {
