@@ -1,0 +1,9 @@
+.diff-value {
+  color: royalblue;
+  font-weight: 500;
+}
+
+.original-value {
+  color: gray;
+  display: block;
+}

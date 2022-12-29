@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
     Updatable<Dimension>
   >([]);
 
-  private dialRefSub: Subscription;
+  private dialogRefSub: Subscription;
   private originalTableSub: Subscription;
 
   constructor(
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.originalTableSub?.unsubscribe();
-    this.dialRefSub?.unsubscribe();
+    this.dialogRefSub?.unsubscribe();
   }
 
   openCreateDialog() {
@@ -65,13 +65,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   openUpdateDialog(dimension: Updatable<Dimension>) {
-    this.dialRefSub?.unsubscribe();
+    this.dialogRefSub?.unsubscribe();
 
     const ref = this.dimensionDialogService.openUpdateDialog(
       dimension.updatedData.value ?? dimension.originalData.value
     );
 
-    this.dialRefSub = ref.subscribe((d) => {
+    this.dialogRefSub = ref.subscribe((d) => {
       if (!d) {
         return;
       }

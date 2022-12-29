@@ -9,28 +9,110 @@
   <ng-container matColumnDef="value">
     <th mat-header-cell *matHeaderCellDef>Value</th>
     <td mat-cell *matCellDef="let element">
-      {{ (element.updatedData.value ?? element.originalData.value).value }}
+      <span
+        [ngClass]="
+          element.updatedData.value &&
+          element.updatedData.value.value !== element.originalData.value.value
+            ? 'diff-value'
+            : ''
+        "
+      >
+        {{ (element.updatedData.value ?? element.originalData.value).value }}
+      </span>
+      <ng-container
+        *ngIf="
+          element.updatedData.value &&
+          element.updatedData.value.value !== element.originalData.value.value
+        "
+      >
+        <span class="mat-caption original-value">{{
+          element.originalData.value.value
+        }}</span>
+      </ng-container>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="riskScore">
     <th mat-header-cell *matHeaderCellDef>Risk score</th>
     <td mat-cell *matCellDef="let element">
-      {{ (element.updatedData.value ?? element.originalData.value).riskScore }}
+      <span
+        [ngClass]="
+          element.updatedData.value &&
+          element.updatedData.value.riskScore !==
+            element.originalData.value.riskScore
+            ? 'diff-value'
+            : ''
+        "
+      >
+        {{
+          (element.updatedData.value ?? element.originalData.value).riskScore
+        }}
+      </span>
+      <ng-container
+        *ngIf="
+          element.updatedData.value &&
+          element.updatedData.value.riskScore !==
+            element.originalData.value.riskScore
+        "
+      >
+        <span class="mat-caption original-value">{{
+          element.originalData.value.riskScore
+        }}</span>
+      </ng-container>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="active">
     <th mat-header-cell *matHeaderCellDef>Active</th>
     <td mat-cell *matCellDef="let element">
-      {{ (element.updatedData.value ?? element.originalData.value).active }}
+      <span
+        [ngClass]="
+          element.updatedData.value &&
+          element.updatedData.value.active !== element.originalData.value.active
+            ? 'diff-value'
+            : ''
+        "
+      >
+        {{ (element.updatedData.value ?? element.originalData.value).active }}
+      </span>
+      <ng-container
+        *ngIf="
+          element.updatedData.value &&
+          element.updatedData.value.active !== element.originalData.value.active
+        "
+      >
+        <span class="mat-caption original-value">{{
+          element.originalData.value.active
+        }}</span>
+      </ng-container>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="visible">
     <th mat-header-cell *matHeaderCellDef>Visible</th>
     <td mat-cell *matCellDef="let element">
-      {{ (element.updatedData.value ?? element.originalData.value).visible }}
+      <span
+        [ngClass]="
+          element.updatedData.value &&
+          element.updatedData.value.visible !==
+            element.originalData.value.visible
+            ? 'diff-value'
+            : ''
+        "
+      >
+        {{ (element.updatedData.value ?? element.originalData.value).visible }}
+      </span>
+      <ng-container
+        *ngIf="
+          element.updatedData.value &&
+          element.updatedData.value.visible !==
+            element.originalData.value.visible
+        "
+      >
+        <span class="mat-caption original-value">{{
+          element.originalData.value.visible
+        }}</span>
+      </ng-container>
     </td>
   </ng-container>
 
