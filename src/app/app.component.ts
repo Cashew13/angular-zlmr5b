@@ -13,7 +13,7 @@ import {
 } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import {
   Observable,
   map,
@@ -35,19 +35,17 @@ import { StatefulDecorator, Updatable } from './interfaces/stateful-decorator';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
-  tableDimensions$: Observable<StatefulDecorator<Dimension>[]> = of([]);
-  ss: string[] = [];
-  createdDimensions$: Observable<string[]> = of([]);
-
-  updatedDimensions: BehaviorSubject<Updatable<Dimension>[]> =
-    new BehaviorSubject([]);
-  originalDimensions$: Observable<Updatable<Dimension>[]>;
+  @ViewChild('originalTable') originalTablePaginator: MatPaginator;
+  @ViewChild('updatedTable') updatedTablePaginator: MatPaginator;
 
   showUpdatedDimensionsTable: boolean = false;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  dataSource = new MatTableDataSource<Updatable<Dimension>>([]);
-
-  displayedColumns: string[] = [
+  readonly originalTableDataSource = new MatTableDataSource<
+    Updatable<Dimension>
+  >([]);
+  readonly updatedTableDataSource = new MatTableDataSource<
+    Updatable<Dimension>
+  >([]);
+  readonly displayedColumns: string[] = [
     'key',
     'value',
     'riskScore',
@@ -56,7 +54,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     'action',
   ];
 
-  private sub: Subscription;
+  private dialRefSub: Subscription;
+  private originalTableSub: Subscription;
 
   constructor(
     public dialog: MatDialog,
@@ -65,31 +64,25 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+    this.originalTableDataSource.paginator = this.originalTablePaginator;
+    this.updatedTableDataSource.paginator = this.updatedTablePaginator;
   }
 
-  private tableSub: Subscription;
-
   ngOnInit() {
-    // this.tableDimensions$ = this.dimensionService
-    //   .fetchDimensions()
-    //   .pipe(map((dms) => dms.map((d) => new StatefulDecorator(d))));
-
-    this.tableSub = this.dimensionService
+    this.originalTableSub = this.dimensionService
       .fetchDimensions()
       .pipe(map((dms) => dms.map((d) => new Updatable(d))))
       .subscribe((dms) => {
-        this.dataSource.data = dms;
+        this.originalTableDataSource.data = dms;
       });
   }
 
   ngOnDestroy() {
-    this.tableSub?.unsubscribe();
-    this.sub?.unsubscribe();
+    this.originalTableSub?.unsubscribe();
+    this.dialRefSub?.unsubscribe();
   }
 
   openCreateDialog() {
-    this.ss.push('123');
     // this.sub?.unsubscribe();
     // const ref = this.dimensionDialogService.openCreateDialog();
     // this.sub = ref.subscribe((d) => {
@@ -97,13 +90,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     //   if (!d) {
     //     return;
     //   }
-
     //   // The save button was clicked.
     //   if (!this.createdDimensions$) {
     //     this.createdDimensions$ = of([JSON.stringify(d)]);
     //     return;
     //   }
-
     //   this.createdDimensions$ = this.createdDimensions$.pipe(
     //     map((dms) => dms.concat([JSON.stringify(d)]))
     //   );
@@ -111,31 +102,33 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   openUpdateDialog(dimension: Updatable<Dimension>) {
-    this.sub?.unsubscribe();
+    this.dialRefSub?.unsubscribe();
 
     const ref = this.dimensionDialogService.openUpdateDialog(
       dimension.updatedData.value ?? dimension.originalData.value
     );
 
-    this.sub = ref.subscribe((d) => {
+    this.dialRefSub = ref.subscribe((d) => {
       if (!d) {
         return;
       }
 
       dimension.updatedData.next(d);
-      const ups = this.updatedDimensions.value;
+      const ups = this.updatedTableDataSource.data;
 
       if (!ups.find((d) => d === dimension)) {
         ups.push(dimension);
-        this.updatedDimensions.next([...ups]);
+        this.updatedTableDataSource.data = [...ups];
         return;
       }
 
       if (this.isDimensionReverted(dimension)) {
         dimension.updatedData.next(null);
-        this.updatedDimensions.next(ups.filter((d) => d !== dimension));
-        this.showUpdatedDimensionsTable =
-          this.updatedDimensions.value.length > 0;
+        this.updatedTableDataSource.data = ups.filter((d) => d !== dimension);
+
+        if (this.updatedTableDataSource.data.length === 0) {
+          this.showUpdatedDimensionsTable = false;
+        }
         return;
       }
     });
@@ -143,9 +136,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   revertChanges(dimension: Updatable<Dimension>): void {
     dimension.updatedData.next(null);
-    const ups = this.updatedDimensions.value;
-    this.updatedDimensions.next(ups.filter((d) => d !== dimension));
-    this.showUpdatedDimensionsTable = this.updatedDimensions.value.length > 0;
+    const ups = this.updatedTableDataSource.data;
+    this.updatedTableDataSource.data = ups.filter((d) => d !== dimension);
+
+    if (this.updatedTableDataSource.data.length === 0) {
+      this.showUpdatedDimensionsTable = false;
+    }
   }
 
   private isDimensionReverted(dimension: Updatable<Dimension>): boolean {

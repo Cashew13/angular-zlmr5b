@@ -21,6 +21,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { DimensionTableComponent } from './dimension-table/dimension-table.component';
 
 @NgModule({
   imports: [
@@ -39,7 +40,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatButtonToggleModule,
     ReactiveFormsModule,
   ],
-  declarations: [AppComponent, DimensionFormComponent],
+  declarations: [AppComponent, DimensionFormComponent, DimensionTableComponent],
   bootstrap: [AppComponent],
   providers: [
     {
