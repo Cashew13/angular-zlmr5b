@@ -3,6 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -16,11 +17,17 @@ import { Updatable } from '../interfaces/stateful-decorator';
   templateUrl: './dimension-table.component.html',
   styleUrls: ['./dimension-table.component.css'],
 })
-export class DimensionTableComponent implements AfterViewInit {
+export class DimensionTableComponent implements OnInit, AfterViewInit {
+  ngOnInit(): void {
+    this.internalDataSource = new MatTableDataSource(this.dataSource);
+  }
+
+  internalDataSource: MatTableDataSource<Updatable<Dimension>>;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   @Input()
-  dataSource: MatTableDataSource<Updatable<Dimension>>;
+  dataSource: Updatable<Dimension>[];
 
   @Output()
   updateActionClick = new EventEmitter<Updatable<Dimension>>();
@@ -38,7 +45,7 @@ export class DimensionTableComponent implements AfterViewInit {
   ];
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+    this.internalDataSource.paginator = this.paginator;
   }
 
   emitUpdateActionClick(arg: Updatable<Dimension>): void {

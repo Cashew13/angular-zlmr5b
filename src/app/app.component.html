@@ -1,10 +1,12 @@
+{{ log() }}
+
 <h1>Ello world!</h1>
 
 <button mat-raised-button color="accent" (click)="openCreateDialog()">
   ADD
 </button>
 
-<ng-container *ngIf="this.updatedTableDataSource.data.length">
+<!-- <ng-container *ngIf="this.updatedTableDataSource.data.length">
   <mat-slide-toggle [(ngModel)]="showUpdatedDimensionsTable"
     >Show all updated
   </mat-slide-toggle>
@@ -21,11 +23,11 @@
     >
     </app-dimension-table>
   </div>
-</ng-container>
+</ng-container> -->
 
 <div [hidden]="showUpdatedDimensionsTable">
   <app-dimension-table
-    [dataSource]="originalTableDataSource"
+    [dataSource]="fetchData() | async"
     (updateActionClick)="openUpdateDialog($event)"
     (revertActionClick)="revertChanges($event)"
   >

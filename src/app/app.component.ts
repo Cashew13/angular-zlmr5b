@@ -32,12 +32,22 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.originalTableSub = this.dimensionService
+    // this.originalTableSub = this.dimensionService
+    //   .fetchDimensions()
+    //   .pipe(map((dms) => dms.map((d) => new Updatable(d))))
+    //   .subscribe((dms) => {
+    //     this.originalTableDataSource.data = dms;
+    //   });
+  }
+
+  log() {
+    console.log('Hello');
+  }
+
+  fetchData() {
+    return this.dimensionService
       .fetchDimensions()
-      .pipe(map((dms) => dms.map((d) => new Updatable(d))))
-      .subscribe((dms) => {
-        this.originalTableDataSource.data = dms;
-      });
+      .pipe(map((dms) => dms.map((d) => new Updatable(d))));
   }
 
   ngOnDestroy() {
