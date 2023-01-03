@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { map, Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { Updatable } from './interfaces/stateful-decorator';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   showUpdatedDimensionsTable: boolean = false;
   readonly originalTableDataSource = new MatTableDataSource<
     Updatable<Dimension>
@@ -31,7 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private dimensionService: DimensionService
   ) {}
 
-  ngOnInit() {
+  ngAfterViewInit(): void {
     this.originalTableSub = this.dimensionService
       .fetchDimensions()
       .pipe(map((dms) => dms.map((d) => new Updatable(d))))
@@ -39,6 +39,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.originalTableDataSource.data = dms;
       });
   }
+
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.originalTableSub?.unsubscribe();

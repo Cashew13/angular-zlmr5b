@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, delay } from 'rxjs';
 import { Dimension } from './dimension';
 
 @Injectable({
@@ -9,7 +9,7 @@ export class DimensionService {
   private readonly dimensions: Dimension[] = [];
 
   constructor() {
-    for (let i = 1; i <= 5000; i++) {
+    for (let i = 1; i <= 500000; i++) {
       this.dimensions.push({
         key: `DM_0000${i}`,
         value: `value/${i}`,
@@ -21,6 +21,6 @@ export class DimensionService {
   }
 
   fetchDimensions(): Observable<Dimension[]> {
-    return of(this.dimensions);
+    return of(this.dimensions).pipe(delay(1000));
   }
 }
